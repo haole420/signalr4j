@@ -127,6 +127,10 @@ public class WebsocketTransport extends HttpClientTransport {
                 try {
                     String decodedString = Charsetfunctions.stringUtf8(frame.getPayloadData());
 
+                    if(decodedString.equals(",")){
+                        return;
+                    }
+
                     if(decodedString.equals("]}")){
                         return;
                     }
