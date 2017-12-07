@@ -14,6 +14,8 @@ import microsoft.aspnet.signalr.client.ConnectionBase;
  */
 public interface ClientTransport {
 
+    int CONNECTION_TIMEOUT_MS = 30 * 1000;
+
     /**
      * Transport name
      */

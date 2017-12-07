@@ -11,6 +11,7 @@ import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.os.Build;
 
+import microsoft.aspnet.signalr.client.transport.ClientTransport;
 import org.apache.http.Header;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
@@ -31,6 +32,7 @@ import java.util.Map;
 import microsoft.aspnet.signalr.client.*;
 import microsoft.aspnet.signalr.client.http.*;
 import microsoft.aspnet.signalr.client.http.HttpConnectionFuture.ResponseCallback;
+import org.apache.http.params.HttpConnectionParams;
 
 /**
  * Android HttpConnection implementation, based on AndroidHttpClient and
@@ -72,6 +74,7 @@ public class AndroidHttpConnection implements HttpConnection {
                 }
 
                 mClient = AndroidHttpClient.newInstance(Platform.getUserAgent());
+                HttpConnectionParams.setConnectionTimeout(mClient.getParams(), ClientTransport.CONNECTION_TIMEOUT_MS);
                 mResponseStream = null;
                 URI uri;
 
