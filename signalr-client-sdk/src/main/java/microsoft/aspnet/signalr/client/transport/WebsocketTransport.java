@@ -57,6 +57,7 @@ public class WebsocketTransport extends HttpClientTransport {
 
     @Override
     public SignalRFuture<Void> start(ConnectionBase connection, ConnectionType connectionType, final DataResultCallback callback) {
+        final String ConnectionUrl = connection.getUrl().replace("http://", "ws://").replace("https://", "wss://");
         final String connectionString = connectionType == ConnectionType.InitialConnection ? "connect" : "reconnect";
 
         final String transport = getName();
@@ -68,7 +69,7 @@ public class WebsocketTransport extends HttpClientTransport {
 
         String url = null;
         try {
-            url = connection.getUrl() + connectionString + '?'
+            url = ConnectionUrl + connectionString + '?'
                     + "connectionData=" + URLEncoder.encode(URLEncoder.encode(connectionData, "UTF-8"), "UTF-8")
                     + "&connectionToken=" + URLEncoder.encode(URLEncoder.encode(connectionToken, "UTF-8"), "UTF-8")
                     + "&groupsToken=" + URLEncoder.encode(groupsToken, "UTF-8")
