@@ -11,17 +11,11 @@ This library can be used from both regular Java or Android applications.
 See the [documentation](http://asp.net/signalr)
 	
 ## LICENSE
-[Apache 2.0 License](https://github.com/SignalR/SignalR/blob/master/LICENSE.md)
-
-## Contributing
-
-See the [contribution  guidelines](https://github.com/SignalR/SignalR/blob/master/CONTRIBUTING.md)
+Apache 2.0 License
 
 ## Building the source
 
-```
-git clone git@github.com:SignalR/java-client.git (or https if you use https)
-```
+Clone repo
 
 Open Android Studio, click "Import Non-Android Studio Project" and select the cloned directory 
 
