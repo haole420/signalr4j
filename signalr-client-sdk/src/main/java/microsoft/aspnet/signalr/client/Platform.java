@@ -57,4 +57,17 @@ public class Platform {
 
         return userAgent;
     }
+
+    public static boolean useProxy() {
+        return (mPlatformComponent != null) && mPlatformComponent.useProxy();
+    }
+
+    public static String getProxyHost() {
+        return (mPlatformComponent != null) ? mPlatformComponent.getProxyHost() : null;
+    }
+
+    public static int getProxyPort() {
+        return (mPlatformComponent != null) ? mPlatformComponent.getProxyPort() : -1;
+    }
+
 }

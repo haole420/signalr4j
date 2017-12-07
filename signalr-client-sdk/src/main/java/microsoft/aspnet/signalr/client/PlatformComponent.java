@@ -17,6 +17,12 @@ public interface PlatformComponent {
     /**
      * Returns a platform-specific Operating System name
      */
-
     public String getOSName();
+
+    boolean useProxy();
+
+    String getProxyHost();
+
+    int getProxyPort();
+
 }

@@ -8,12 +8,11 @@ package microsoft.aspnet.signalr.client.transport;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLEncoder;
+import java.net.*;
 
 import com.google.gson.Gson;
 
+import microsoft.aspnet.signalr.client.*;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft_17;
 import org.java_websocket.exceptions.InvalidDataException;
@@ -21,11 +20,6 @@ import org.java_websocket.framing.Framedata;
 import org.java_websocket.handshake.ServerHandshake;
 import org.java_websocket.util.Charsetfunctions;
 
-import microsoft.aspnet.signalr.client.ConnectionBase;
-import microsoft.aspnet.signalr.client.LogLevel;
-import microsoft.aspnet.signalr.client.Logger;
-import microsoft.aspnet.signalr.client.SignalRFuture;
-import microsoft.aspnet.signalr.client.UpdateableCancellableFuture;
 import microsoft.aspnet.signalr.client.http.HttpConnection;
 
 import javax.net.ssl.SSLSocketFactory;
@@ -160,14 +154,11 @@ public class WebsocketTransport extends HttpClientTransport {
             }
         };
 
-        boolean isSslSocket = url.startsWith(SECURE_WEBSOCKET_URL_START);
-        if (isSslSocket){
-            try {
-                SSLSocketFactory factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
-                mWebSocketClient.setSocket(factory.createSocket());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        try {
+            Socket socket = createConnectedSocket(uri);
+            mWebSocketClient.setSocket(socket);
+        } catch (IOException e) {
+            mConnectionFuture.triggerError(e);
         }
         mWebSocketClient.connect();
 
@@ -179,6 +170,34 @@ public class WebsocketTransport extends HttpClientTransport {
         });
 
         return mConnectionFuture;
+    }
+
+    private Socket createConnectedSocket(URI uri) throws IOException {
+        String host = uri.getHost();
+        boolean isSecureSocket = uri.toString().startsWith(SECURE_WEBSOCKET_URL_START);
+        int port = isSecureSocket ? 443 : 80;
+
+        boolean useProxy = Platform.useProxy();
+        String proxyHost = Platform.getProxyHost();
+        int proxyPort = Platform.getProxyPort();
+        Proxy proxy = useProxy ? new Proxy(Proxy.Type.SOCKS, new InetSocketAddress(proxyHost, proxyPort)) : Proxy.NO_PROXY;
+
+        if (isSecureSocket){
+            SSLSocketFactory factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+            if (useProxy){
+                Socket underlyingSocket = new Socket(proxy);
+                underlyingSocket.connect(new InetSocketAddress(host, port), CONNECTION_TIMEOUT_MS);
+                return factory.createSocket(underlyingSocket, proxyHost, proxyPort, true);
+            } else {
+                Socket socket = factory.createSocket();
+                socket.connect(new InetSocketAddress(host, port), CONNECTION_TIMEOUT_MS);
+                return socket;
+            }
+        } else {
+            Socket socket = new Socket(proxy);
+            socket.connect(new InetSocketAddress(host, port), CONNECTION_TIMEOUT_MS);
+            return socket;
+        }
     }
 
     @Override

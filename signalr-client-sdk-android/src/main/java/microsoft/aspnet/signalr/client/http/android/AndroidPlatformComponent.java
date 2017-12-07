@@ -28,4 +28,20 @@ public class AndroidPlatformComponent implements PlatformComponent {
         return "android";
     }
 
+    @Override
+    public boolean useProxy() {
+        return false;
+    }
+
+    @Override
+    public String getProxyHost() {
+        return System.getProperty("http.proxyHost");
+    }
+
+    @Override
+    public int getProxyPort() {
+        String portString = System.getProperty("http.proxyPort");
+        return ((portString == null) || portString.isEmpty()) ? -1 :Integer.parseInt(portString);
+    }
+
 }
