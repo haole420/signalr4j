@@ -6,6 +6,7 @@ See License.txt in the project root for license information.
 
 package microsoft.aspnet.signalr.client.transport;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -26,6 +27,8 @@ import microsoft.aspnet.signalr.client.Logger;
 import microsoft.aspnet.signalr.client.SignalRFuture;
 import microsoft.aspnet.signalr.client.UpdateableCancellableFuture;
 import microsoft.aspnet.signalr.client.http.HttpConnection;
+
+import javax.net.ssl.SSLSocketFactory;
 
 /**
  * Implements the WebsocketTransport for the Java SignalR library
@@ -156,6 +159,16 @@ public class WebsocketTransport extends HttpClientTransport {
                 }
             }
         };
+
+        boolean isSslSocket = url.startsWith(SECURE_WEBSOCKET_URL_START);
+        if (isSslSocket){
+            try {
+                SSLSocketFactory factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+                mWebSocketClient.setSocket(factory.createSocket());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         mWebSocketClient.connect();
 
         connection.closed(new Runnable() {
