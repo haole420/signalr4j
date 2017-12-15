@@ -63,6 +63,7 @@ public abstract class HttpClientTransport implements ClientTransport {
         get.setUrl(url);
         get.setHeaders(connection.getHeaders());
         get.setVerb(Constants.HTTP_GET);
+        get.setHeaders(connection.getHeaders());
 
         connection.prepareRequest(get);
 
