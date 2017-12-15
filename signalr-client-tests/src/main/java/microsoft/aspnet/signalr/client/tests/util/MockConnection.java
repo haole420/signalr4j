@@ -183,4 +183,10 @@ public class MockConnection implements ConnectionBase {
 
     }
 
+	@Override
+	public void addHeader(String headerName, String headerValue) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
