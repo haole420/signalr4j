@@ -16,53 +16,55 @@ import microsoft.aspnet.signalr.client.http.HttpConnectionFuture.ResponseCallbac
  */
 public class JavaHttpConnection implements HttpConnection {
 
-    /**
-     * User agent header name
-     */
-    private static final String USER_AGENT_HEADER = "User-Agent";
+	/**
+	 * User agent header name
+	 */
+	private static final String USER_AGENT_HEADER = "User-Agent";
 
-    private Logger mLogger;
+	private Logger mLogger;
 
-    /**
-     * Initializes the JavaHttpConnection
-     * 
-     * @param logger
-     *            logger to log activity
-     */
-    public JavaHttpConnection(Logger logger) {
-        mLogger = logger;
-    }
+	/**
+	 * Initializes the JavaHttpConnection
+	 * 
+	 * @param logger
+	 *            logger to log activity
+	 */
+	public JavaHttpConnection(Logger logger) {
+		mLogger = logger;
+	}
 
-    @Override
-    public HttpConnectionFuture execute(final Request request, final ResponseCallback callback) {
+	@Override
+	public HttpConnectionFuture execute(final Request request, final ResponseCallback callback) {
 
-        request.addHeader(USER_AGENT_HEADER, Platform.getUserAgent());
+		if (request.getHeaderField(USER_AGENT_HEADER) == null) {
+			request.addHeader(USER_AGENT_HEADER, Platform.getUserAgent());
+		}
 
-        mLogger.log("Create new thread for HTTP Connection", LogLevel.Verbose);
+		mLogger.log("Create new thread for HTTP Connection", LogLevel.Verbose);
 
-        HttpConnectionFuture future = new HttpConnectionFuture();
+		HttpConnectionFuture future = new HttpConnectionFuture();
 
-        final NetworkRunnable target = new NetworkRunnable(mLogger, request, future, callback);
-        final NetworkThread networkThread = new NetworkThread(target) {
-            @Override
-            void releaseAndStop() {
-                try {
-                    target.closeStreamAndConnection();
-                } catch (Throwable error) {
-                }
-            }
-        };
+		final NetworkRunnable target = new NetworkRunnable(mLogger, request, future, callback);
+		final NetworkThread networkThread = new NetworkThread(target) {
+			@Override
+			void releaseAndStop() {
+				try {
+					target.closeStreamAndConnection();
+				} catch (Throwable error) {
+				}
+			}
+		};
 
-        future.onCancelled(new Runnable() {
+		future.onCancelled(new Runnable() {
 
-            @Override
-            public void run() {
-                networkThread.releaseAndStop();
-            }
-        });
+			@Override
+			public void run() {
+				networkThread.releaseAndStop();
+			}
+		});
 
-        networkThread.start();
+		networkThread.start();
 
-        return future;
-    }
+		return future;
+	}
 }
