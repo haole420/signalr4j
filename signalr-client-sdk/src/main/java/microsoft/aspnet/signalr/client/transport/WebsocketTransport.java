@@ -68,8 +68,8 @@ public class WebsocketTransport extends HttpClientTransport {
 	}
 
 	@Override
-	public SignalRFuture<Void> start(ConnectionBase connection, ConnectionType connectionType,
-			final DataResultCallback callback) {
+	public SignalRFuture<Void> start(final ConnectionBase connection, ConnectionType connectionType,
+									 final DataResultCallback callback) {
 		final String ConnectionUrl = connection.getUrl().replace(HTTP_URL_START, WEBSOCKET_URL_START)
 				.replace(SECURE_HTTP_URL_START, SECURE_WEBSOCKET_URL_START);
 		final String connectionString = connectionType == ConnectionType.InitialConnection ? "connect" : "reconnect";
@@ -131,6 +131,7 @@ public class WebsocketTransport extends HttpClientTransport {
 			@Override
 			public void onError(Exception e) {
 				mWebSocketClient.close();
+				connection.onError(e,true);
 			}
 
 			@Override
