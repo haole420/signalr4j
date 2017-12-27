@@ -1,1 +1,0 @@
-include ':signalr-client-sdk', ':signalr-client-tests', ':signalr-client-test-integration-base', ':signalr-client-test-integration-java'
