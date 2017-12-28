@@ -9,6 +9,9 @@ package com.github.signalr4j.client.transport;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.net.ssl.SSLSocketFactory;
 
@@ -23,6 +26,8 @@ import org.java_websocket.handshake.ServerHandshake;
 import org.java_websocket.util.Charsetfunctions;
 
 import com.github.signalr4j.client.http.HttpConnection;
+
+import static java.util.stream.Collectors.joining;
 
 /**
  * Implements the WebsocketTransport for the Java SignalR library Created by
@@ -68,35 +73,32 @@ public class WebsocketTransport extends HttpClientTransport {
 	@Override
 	public SignalRFuture<Void> start(final ConnectionBase connection, ConnectionType connectionType,
 									 final DataResultCallback callback) {
-		final String ConnectionUrl = connection.getUrl().replace(HTTP_URL_START, WEBSOCKET_URL_START)
+
+		final String connectionUrl = connection.getUrl()
+				.replace(HTTP_URL_START, WEBSOCKET_URL_START)
 				.replace(SECURE_HTTP_URL_START, SECURE_WEBSOCKET_URL_START);
+
 		final String connectionString = connectionType == ConnectionType.InitialConnection ? "connect" : "reconnect";
 
-		final String transport = getName();
-		final String connectionToken = connection.getConnectionToken();
-		final String messageId = connection.getMessageId() != null ? connection.getMessageId() : "";
-		final String groupsToken = connection.getGroupsToken() != null ? connection.getGroupsToken() : "";
-		final String connectionData = connection.getConnectionData() != null ? connection.getConnectionData() : "";
+		Map<String, String> requestParams = new HashMap<>();
+		requestParams.put("connectionToken", connection.getConnectionToken());
+		requestParams.put("connectionData", connection.getConnectionData());
+		requestParams.put("groupsToken", connection.getGroupsToken());
+		requestParams.put("messageId", connection.getMessageId());
+		requestParams.put("transport", getName());
 
 		boolean isSsl = false;
-		String url = null;
-		try {
-			url = connection.getUrl() + connectionString + '?' + "connectionData="
-					+ URLEncoder.encode(connectionData, "UTF-8") + "&connectionToken="
-					+ URLEncoder.encode(connectionToken, "UTF-8") + "&groupsToken="
-					+ URLEncoder.encode(groupsToken, "UTF-8") + "&messageId=" + messageId
-					+ "&transport=" + URLEncoder.encode(transport, "UTF-8");
-			if (connection.getQueryString() != null) {
-				url += "&" + connection.getQueryString();
-			}
-			if (url.startsWith("https://")) {
-				isSsl = true;
-				url = url.replace("https://", "wss://");
-			} else if (url.startsWith("http://")) {
-				url = url.replace("http://", "ws://");
-			}
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+
+		String url = requestParams.keySet().stream()
+				.map(key -> key + "=" + encodeValue(requestParams.get(key)))
+				.collect(joining("&", connectionUrl + connectionString + "?", ""));
+
+		if (connection.getQueryString() != null) {
+			url += "&" + connection.getQueryString();
+		}
+
+		if (url.startsWith(SECURE_WEBSOCKET_SCHEME)) {
+			isSsl = true;
 		}
 
 		mConnectionFuture = new UpdateableCancellableFuture<Void>(null);
@@ -187,6 +189,20 @@ public class WebsocketTransport extends HttpClientTransport {
 		});
 
 		return mConnectionFuture;
+	}
+
+	private String encodeValue(String value) {
+
+		String result = "";
+
+		try {
+			if(value != null)
+				result = URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+
+		return result;
 	}
 
 	private Socket createConnectedSocket(URI uri) throws IOException {
