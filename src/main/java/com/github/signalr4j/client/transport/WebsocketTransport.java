@@ -82,9 +82,9 @@ public class WebsocketTransport extends HttpClientTransport {
 		String url = null;
 		try {
 			url = connection.getUrl() + connectionString + '?' + "connectionData="
-					+ URLEncoder.encode(URLEncoder.encode(connectionData, "UTF-8"), "UTF-8") + "&connectionToken="
-					+ URLEncoder.encode(URLEncoder.encode(connectionToken, "UTF-8"), "UTF-8") + "&groupsToken="
-					+ URLEncoder.encode(groupsToken, "UTF-8") + "&messageId=" + URLEncoder.encode(messageId, "UTF-8")
+					+ URLEncoder.encode(connectionData, "UTF-8") + "&connectionToken="
+					+ URLEncoder.encode(connectionToken, "UTF-8") + "&groupsToken="
+					+ URLEncoder.encode(groupsToken, "UTF-8") + "&messageId=" + messageId
 					+ "&transport=" + URLEncoder.encode(transport, "UTF-8");
 			if (connection.getQueryString() != null) {
 				url += "&" + connection.getQueryString();
