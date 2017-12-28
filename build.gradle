@@ -69,6 +69,15 @@ if(project.findProperty("ossrhUsername") != null && project.findProperty("ossrhP
                             url 'https://www.apache.org/licenses/LICENSE-2.0'
                         }
                     }
+
+                    developers {
+                        developer {
+                            id 'CCob'
+                            name 'Ceri Coburn'
+                            email 'ceri.coburn@gmail.com'
+                        }
+                    }
+
                 }
             }
         }
