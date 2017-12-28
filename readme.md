@@ -1,5 +1,7 @@
 # ASP.NET SignalR for Java and Android
 
+This is a fork of the original Microsoft SignalR library and also includes fixes from various developers since 2015.  I has been renamed to signalr4j to allow publishing to maven central under the com.github.signalr4j package.
+
 **Note: This library is [NOT compatible](https://github.com/aspnet/SignalR/issues/883#issuecomment-336499189) with ASP.NET Core SignalR 2.0.**
 
 ASP.NET SignalR is a new library for ASP.NET developers that makes it incredibly simple to add real-time web functionality to your applications. What is "real-time web" functionality? It's the ability to have your server-side code push content to the connected clients as it happens, in real-time.
@@ -16,33 +18,18 @@ See the [documentation](http://asp.net/signalr)
 ## LICENSE
 Apache 2.0 License
 
-## Building the source
-
-Clone repo
-
-Open Android Studio, click "Import Non-Android Studio Project" and select the cloned directory 
-
-Build the project.
-
-The signalr-client-sdk.jar will be generated inside the /signalr-client-sdk/build/libs folder
-
-The signalr-client-sdk-android.aar will be generated inside the /signalr-client-sdk-android/build/outputs/aar folder
-
-## Running the tests:
-	
-Run the signalr-client-tests project as a JUnit test.
-
 ## Using the library in a Java application:
 
-Add the signalr-client-sdk.jar and gson library gradle dependencyto the project.
+signalr4j is published on the Maven Central repository, so simply adding the maven coordinates to your dependencies section will get you started.  
 
-## Using the library in an Android application:
+```
+<dependency>
+    <groupId>com.github.signalr4j</groupId>
+    <artifactId>signalr4j</artifactId>
+    <version>2.0.0</version>
+</dependency>
+```
 
-Add the signalr-client-sdk.jar, signalr-client-sdk-android.jar gson library as a gradle dependency to the project.
-
-In the code, before using the library, initialize the platform to use android-specific libraries and compatibility with older Android versions:
-	- Platform.loadPlatformComponent(new AndroidPlatformComponent());
 
 
-## Questions?
-The SignalR team hangs out in the [signalr](http://jabbr.net/#/rooms/signalr) room at on [JabbR](http://jabbr.net/).
+
