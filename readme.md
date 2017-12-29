@@ -1,4 +1,5 @@
 # ASP.NET SignalR for Java and Android
+(https://maven-badges.herokuapp.com/maven-central/com.github.signalr4j/signalr4j/badge.svg)
 
 This is a fork of the original Microsoft SignalR library and also includes fixes from various developers since 2015.  I has been renamed to signalr4j to allow publishing to maven central under the com.github.signalr4j package.
 
