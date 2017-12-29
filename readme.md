@@ -2,6 +2,7 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.signalr4j/signalr4j/badge.svg?style=plastic)](https://maven-badges.herokuapp.com/maven-central/com.github.signalr4j/signalr4j)
 
 This is a fork of the original Microsoft SignalR library and also includes fixes from various developers since 2015.  I has been renamed to signalr4j to allow publishing to maven central under the com.github.signalr4j package.
+
 **Note: This library is [NOT compatible](https://github.com/aspnet/SignalR/issues/883#issuecomment-336499189) with ASP.NET Core SignalR 2.0.**
 
 ASP.NET SignalR is a new library for ASP.NET developers that makes it incredibly simple to add real-time web functionality to your applications. What is "real-time web" functionality? It's the ability to have your server-side code push content to the connected clients as it happens, in real-time.
