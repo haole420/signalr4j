@@ -768,9 +768,12 @@ public class Connection implements ConnectionBase {
 
     @Override
     public void onError(Throwable error, boolean mustCleanCurrentConnection) {
-        log(error);
+
+        if(error != null)
+            log(error);
+
         if (mustCleanCurrentConnection) {
-            if (mState == ConnectionState.Connected) {
+            if (mState == ConnectionState.Connected || mState == ConnectionState.Reconnecting) {
                 log("Triggering reconnect", LogLevel.Verbose);
                 reconnect();
             } else {
@@ -800,7 +803,7 @@ public class Connection implements ConnectionBase {
      * Stops the heartbeat monitor and re-starts the transport
      */
     private void reconnect() {
-        if (mState == ConnectionState.Connected) {
+        if (mState == ConnectionState.Connected || mState == ConnectionState.Reconnecting) {
             log("Stopping Heartbeat monitor", LogLevel.Verbose);
             mHeartbeatMonitor.stop();
             log("Restarting the transport", LogLevel.Information);

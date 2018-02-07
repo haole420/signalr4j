@@ -21,6 +21,7 @@ import com.google.gson.Gson;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft_6455;
 import org.java_websocket.exceptions.InvalidDataException;
+import org.java_websocket.framing.CloseFrame;
 import org.java_websocket.framing.Framedata;
 import org.java_websocket.handshake.ServerHandshake;
 import org.java_websocket.util.Charsetfunctions;
@@ -113,6 +114,9 @@ public class WebsocketTransport extends HttpClientTransport {
 		}
 
 		mWebSocketClient = new WebSocketClient(uri, new Draft_6455(), connection.getHeaders(), 0) {
+
+			Exception e;
+
 			@Override
 			public void onOpen(ServerHandshake serverHandshake) {
 				mConnectionFuture.setResult(null);
@@ -126,12 +130,15 @@ public class WebsocketTransport extends HttpClientTransport {
 			@Override
 			public void onClose(int i, String s, boolean b) {
 				mWebSocketClient.close();
+				if(i!= CloseFrame.NORMAL || e != null){
+					connection.onError(e,true);
+				}
 			}
 
 			@Override
 			public void onError(Exception e) {
 				mWebSocketClient.close();
-				connection.onError(e,true);
+				this.e = e;
 			}
 
 			@Override
