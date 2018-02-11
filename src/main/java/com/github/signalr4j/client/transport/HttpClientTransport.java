@@ -153,13 +153,9 @@ public abstract class HttpClientTransport implements ClientTransport {
                     connection.prepareRequest(post);
 
                     log("Execute request", LogLevel.Verbose);
-                    mAbortFuture = mHttpConnection.execute(post, new HttpConnectionFuture.ResponseCallback() {
-
-                        @Override
-                        public void onResponse(Response response) {
-                            log("Finishing abort", LogLevel.Verbose);
-                            mStartedAbort = false;
-                        }
+                    mAbortFuture = mHttpConnection.execute(post, response -> {
+                        log("Finishing abort", LogLevel.Verbose);
+                        mStartedAbort = false;
                     });
 
                     return mAbortFuture;
@@ -169,7 +165,7 @@ public abstract class HttpClientTransport implements ClientTransport {
                     log("Finishing abort", LogLevel.Verbose);
                     mStartedAbort = false;
 
-                    SignalRFuture<Void> future = new SignalRFuture<Void>();
+                    SignalRFuture<Void> future = new SignalRFuture<>();
                     future.triggerError(e);
 
                     return future;

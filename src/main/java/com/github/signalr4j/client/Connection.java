@@ -86,6 +86,8 @@ public class Connection implements ConnectionBase {
 
     private Object mStartLock = new Object();
 
+    private boolean reconnectOnError = true;
+
     /**
      * Initializes the connection with an URL
      * 
@@ -195,6 +197,11 @@ public class Connection implements ConnectionBase {
     @Override
     public void setMessageId(String messageId) {
         mMessageId = messageId;
+    }
+
+    @Override
+    public void setReconnectOnError(boolean reconnectOnError) {
+        this.reconnectOnError = reconnectOnError;
     }
 
     @Override
@@ -643,6 +650,8 @@ public class Connection implements ConnectionBase {
                     mHeartbeatMonitor.stop();
                 }
 
+                mTransport.abort(this);
+
                 changeState(ConnectionState.Connected, ConnectionState.Reconnecting);
                 onReconnecting();
             }
@@ -665,7 +674,10 @@ public class Connection implements ConnectionBase {
                 @Override
                 public void run() {
                     log("Timeout", LogLevel.Information);
-                    reconnect();
+                    if(reconnectOnError)
+                        reconnect();
+                    else
+                        disconnect();
                 }
             });
 
@@ -773,15 +785,15 @@ public class Connection implements ConnectionBase {
             log(error);
 
         if (mustCleanCurrentConnection) {
-            if (mState == ConnectionState.Connected || mState == ConnectionState.Reconnecting) {
+            if ( (mState == ConnectionState.Connected || mState == ConnectionState.Reconnecting) && reconnectOnError) {
                 log("Triggering reconnect", LogLevel.Verbose);
                 reconnect();
             } else {
                 log("Triggering disconnect", LogLevel.Verbose);
-                disconnect();
                 if (mOnError != null) {
                     mOnError.onError(error);
                 }
+                disconnect();
             }
         } else {
             if (mOnError != null) {

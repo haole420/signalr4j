@@ -20,52 +20,58 @@ public interface ConnectionBase {
     /**
      * Returns the URL used by the connection
      */
-    public String getUrl();
+    String getUrl();
 
     /**
      * Returns the credentials used by the connection
      */
-    public Credentials getCredentials();
+    Credentials getCredentials();
 
     /**
      * Sets the credentials the connection should use
      */
-    public void setCredentials(Credentials credentials);
+    void setCredentials(Credentials credentials);
 
     /**
      * Sets the message id the connection should use
      */
-    public void setMessageId(String messageId);
+    void setMessageId(String messageId);
+
+    /**
+     * Sets whether the connection should be re-attempted
+     * on error or we simply disconnect and notify user
+     */
+    void setReconnectOnError(boolean reconnectOnError);
 
     /**
      * Sets the groups token the connection should use
      */
-    public void setGroupsToken(String groupsToken);
+    void setGroupsToken(String groupsToken);
 
     /**
      * Sets the handler for the "Reconnecting" event
      */
-    public void reconnecting(Runnable handler);
+    void reconnecting(Runnable handler);
 
     /**
      * Sets the handler for the "Reconnected" event
      */
-    public void reconnected(Runnable handler);
+    void reconnected(Runnable handler);
 
     /**
      * Sets the handler for the "Connected" event
      */
-    public void connected(Runnable handler);
+    void connected(Runnable handler);
 
     /**
      * Sets the handler for the "Error" event
      */
-    public void error(ErrorCallback handler);
+    void error(ErrorCallback handler);
 
     /**
      * Sets the handler for the "StateChanged" event
      */
-    public void stateChanged(StateChangedCallback handler);
+    void stateChanged(StateChangedCallback handler);
 
     /**
      * Triggers the Error event
@@ -75,59 +81,59 @@ public interface ConnectionBase {
      * @param mustCleanCurrentConnection
      *            True if the connection must be cleaned
      */
-    public void onError(Throwable error, boolean mustCleanCurrentConnection);
+    void onError(Throwable error, boolean mustCleanCurrentConnection);
 
     /**
      * Sets the handler for the "Received" event
      */
-    public void received(MessageReceivedHandler handler);
+    void received(MessageReceivedHandler handler);
 
-    public void onReceived(JsonElement message);
+    void onReceived(JsonElement message);
 
     /**
      * Sets the handler for the "ConnectionSlow" event
      */
-    public void connectionSlow(Runnable handler);
+    void connectionSlow(Runnable handler);
 
     /**
      * Sets the handler for the "Closed" event
      */
-    public void closed(Runnable handler);
+    void closed(Runnable handler);
 
     /**
      * Returns the connection token
      */
-    public String getConnectionToken();
+    String getConnectionToken();
 
     /**
      * Returns the connection Id
      */
-    public String getConnectionId();
+    String getConnectionId();
 
     /**
      * Returns the query string used by the connection
      */
-    public String getQueryString();
+    String getQueryString();
 
     /**
      * Returns the current message Id
      */
-    public String getMessageId();
+    String getMessageId();
 
     /**
      * Returns the connection groups token
      */
-    public String getGroupsToken();
+    String getGroupsToken();
 
     /**
      * Returns the data used by the connection
      */
-    public String getConnectionData();
+    String getConnectionData();
 
     /**
      * Returns the connection state
      */
-    public ConnectionState getState();
+    ConnectionState getState();
 
     /**
      * Starts the connection
@@ -136,17 +142,17 @@ public interface ConnectionBase {
      *            Transport to be used by the connection
      * @return Future for the operation
      */
-    public SignalRFuture<Void> start(ClientTransport transport);
+    SignalRFuture<Void> start(ClientTransport transport);
 
     /**
      * Aborts the connection and closes it
      */
-    public void stop();
+    void stop();
 
     /**
      * Closes the connection
      */
-    public void disconnect();
+    void disconnect();
 
     /**
      * Sends data using the connection
@@ -155,7 +161,7 @@ public interface ConnectionBase {
      *            Data to send
      * @return Future for the operation
      */
-    public SignalRFuture<Void> send(String data);
+    SignalRFuture<Void> send(String data);
 
     /**
      * Prepares a request that is going to be sent to the server
@@ -193,5 +199,5 @@ public interface ConnectionBase {
     /**
      * Returns the Logger used by the connection
      */
-    public Logger getLogger();
+    Logger getLogger();
 }
