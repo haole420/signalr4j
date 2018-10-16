@@ -558,8 +558,8 @@ public class Connection implements ConnectionBase {
             mMessageId = null;
             mTransport = null;
 
-            onClosed();
         }
+        onClosed();
     }
 
     @Override
