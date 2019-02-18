@@ -101,6 +101,7 @@ class NetworkRunnable implements Runnable {
     void closeStreamAndConnection() {
 
         try {
+
             if (mConnection != null) {
                 mConnection.disconnect();
             }
@@ -124,6 +125,10 @@ class NetworkRunnable implements Runnable {
         URL url = new URL(request.getUrl());
         
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        // the timeout needs for right disconnection.
+        // without it when disconnect() calls at NetworkRunnable.closeStreamAndConnection()
+        // there is the deadlock occurred at StreamResponse.readLine()
+        connection.setReadTimeout(15 * 1000);
         connection.setConnectTimeout(15 * 1000);
         connection.setRequestMethod(request.getVerb());
 
