@@ -581,6 +581,8 @@ public class Connection implements ConnectionBase {
      * Triggers the Reconnecting event
      */
     protected void onReconnecting() {
+        changeState(ConnectionState.Connected, ConnectionState.Reconnecting);
+
         if (mOnReconnecting != null) {
             mOnReconnecting.run();
         }
@@ -652,7 +654,6 @@ public class Connection implements ConnectionBase {
 
                 mTransport.abort(this);
 
-                changeState(ConnectionState.Connected, ConnectionState.Reconnecting);
                 onReconnecting();
             }
 
