@@ -820,7 +820,14 @@ public class Connection implements ConnectionBase {
             log("Stopping Heartbeat monitor", LogLevel.Verbose);
             mHeartbeatMonitor.stop();
             log("Restarting the transport", LogLevel.Information);
-            startTransport(mHeartbeatMonitor.getKeepAliveData(), true);
+            
+            // if it is reconnecting and the connection cannot yet be established
+            // therefore the mHeartbeatMonitor instance wouldn't be initialized with the KeepAliveData value
+            KeepAliveData keepAliveData = mHeartbeatMonitor.getKeepAliveData();
+            if (keepAliveData == null && mKeepAliveData != null)
+                keepAliveData = mKeepAliveData;
+
+            startTransport(keepAliveData, true);
         }
     }
 
