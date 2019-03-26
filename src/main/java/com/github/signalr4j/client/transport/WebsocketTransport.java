@@ -6,18 +6,9 @@ See License.txt in the project root for license information.
 
 package com.github.signalr4j.client.transport;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.*;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.net.ssl.SSLSocketFactory;
-
 import com.github.signalr4j.client.*;
+import com.github.signalr4j.client.http.HttpConnection;
 import com.google.gson.Gson;
-
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft_6455;
 import org.java_websocket.exceptions.InvalidDataException;
@@ -26,9 +17,14 @@ import org.java_websocket.framing.Framedata;
 import org.java_websocket.handshake.ServerHandshake;
 import org.java_websocket.util.Charsetfunctions;
 
-import com.github.signalr4j.client.http.HttpConnection;
-
-import static java.util.stream.Collectors.joining;
+import javax.net.ssl.SSLSocketFactory;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.*;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Implements the WebsocketTransport for the Java SignalR library Created by
@@ -90,9 +86,27 @@ public class WebsocketTransport extends HttpClientTransport {
 
 		boolean isSsl = false;
 
-		String url = requestParams.keySet().stream()
-				.map(key -> key + "=" + encodeValue(requestParams.get(key)))
-				.collect(joining("&", connectionUrl + connectionString + "?", ""));
+//      Error on API < 24
+//		String url = requestParams.keySet().stream()
+//				.map(key -> key + "=" + encodeValue(requestParams.get(key)))
+//				.collect(joining("&", connectionUrl + connectionString + "?", ""));
+
+		ArrayList<String> keys = new ArrayList<>(requestParams.keySet());
+		StringBuilder urlBuilder = new StringBuilder();
+		urlBuilder.append(connectionUrl);
+		urlBuilder.append(connectionString);
+		urlBuilder.append("?");
+		for (int i = 0; i < keys.size(); i++) {
+			String key = keys.get(i);
+			urlBuilder.append(key);
+			urlBuilder.append("=");
+			urlBuilder.append(encodeValue(requestParams.get(key)));
+			if (i != keys.size() - 1) {
+				urlBuilder.append("&");
+			}
+		}
+
+		String url = urlBuilder.toString();
 
 		if (connection.getQueryString() != null) {
 			url += "&" + connection.getQueryString();
@@ -130,8 +144,8 @@ public class WebsocketTransport extends HttpClientTransport {
 			@Override
 			public void onClose(int i, String s, boolean b) {
 				mWebSocketClient.close();
-				if(i!= CloseFrame.NORMAL || e != null){
-					connection.onError(e,true);
+				if (i != CloseFrame.NORMAL || e != null) {
+					connection.onError(e, true);
 				}
 			}
 
@@ -203,8 +217,8 @@ public class WebsocketTransport extends HttpClientTransport {
 		String result = "";
 
 		try {
-			if(value != null)
-				result = URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
+			if (value != null)
+				result = URLEncoder.encode(value, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
